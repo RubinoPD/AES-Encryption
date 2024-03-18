@@ -19,8 +19,9 @@ namespace Praktinis2
                 // Display menu options
                 Console.WriteLine("Pasirinkite ka norite daryti:");
                 Console.WriteLine("1. Encrypt text.");
-                Console.WriteLine("2. Decrypt text.");
-                Console.WriteLine("3. Exit.");
+                Console.WriteLine("2. Decrypt text from file.");
+                Console.WriteLine("3. Decrypt text.");
+                Console.WriteLine("4. Exit.");
 
 
                 // Read users choice
@@ -39,9 +40,12 @@ namespace Praktinis2
                         EncryptText();
                         break;
                     case 2:
-                        DecryptText();
+                        DecryptTextFromFile();
                         break;
                     case 3:
+                        DecryptText();
+                        break;
+                    case 4:
                         return;
                     default:
                         Console.WriteLine("Invalid choice. Please enter a valid option.");
@@ -66,7 +70,6 @@ namespace Praktinis2
             Console.WriteLine("1. ECB");
             Console.WriteLine("2. CBC");
             Console.WriteLine("3. CFB");
-            Console.WriteLine("4. OFB");
 
             CipherMode mode;
 
@@ -80,9 +83,6 @@ namespace Praktinis2
                     break;
                 case "3":
                     mode = CipherMode.CFB;
-                    break;
-                case "4":
-                    mode = CipherMode.OFB;
                     break;
                 default:
                     Console.WriteLine("Invalid mode. Using ECB by default.");
@@ -100,17 +100,20 @@ namespace Praktinis2
                 Console.WriteLine("Enter file name to save the encrypted text:");
                 string fileName = Console.ReadLine();
                 File.WriteAllText(fileName, encryptedText);
-                Console.WriteLine("Encrypted text saved to file successfully.");
+                Console.WriteLine("Encrypted text saved to file successfully.\n");
+            } else
+            {
+                Console.WriteLine("Text has been successfully encrypted!\n");
             }
         }
 
-        static void DecryptText()
+        static void DecryptTextFromFile()
         {
             Console.WriteLine("Enter the file name containing the encrypted text:");
             string fileName = Console.ReadLine();
             string encryptedText = File.ReadAllText(fileName);
 
-            Console.WriteLine("Enter the seckret key: ");
+            Console.WriteLine("Enter the secret key: ");
             string key = Console.ReadLine();
 
             // Pad or truncate the key to 16 bytes (128 bits)
@@ -120,7 +123,6 @@ namespace Praktinis2
             Console.WriteLine("1. ECB");
             Console.WriteLine("2. CBC");
             Console.WriteLine("3. CFB");
-            Console.WriteLine("4. OFB");
 
             CipherMode mode;
             switch (Console.ReadLine())
@@ -134,9 +136,6 @@ namespace Praktinis2
                 case "3":
                     mode = CipherMode.CFB;
                     break;
-                case "4":
-                    mode = CipherMode.OFB;
-                    break;
                 default:
                     Console.WriteLine("Invalid mode. Using ECB by default.");
                     mode = CipherMode.ECB;
@@ -145,6 +144,44 @@ namespace Praktinis2
 
             string decryptedText = Decrypt(encryptedText, key, mode);
             Console.WriteLine("Decrypted Text: " + decryptedText);
+        }
+
+        static void DecryptText()
+        {
+            Console.WriteLine("Enter the encrypted text:");
+            string encryptedText = Console.ReadLine();
+
+            Console.WriteLine("Enter the secret key:");
+            string key = Console.ReadLine();
+
+            key = key.PadRight(16, '\0').Substring(0, 16);
+
+            Console.WriteLine("Select encryption mode:");
+            Console.WriteLine("1. ECB");
+            Console.WriteLine("2. CBC");
+            Console.WriteLine("3. CFB");
+
+            CipherMode mode;
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    mode = CipherMode.ECB;
+                    break;
+                case "2":
+                    mode = CipherMode.CBC;
+                    break;
+                case "3":
+                    mode = CipherMode.CFB;
+                    break;
+                default:
+                    Console.WriteLine("Invalid mode. Using ECB by default.");
+                    mode = CipherMode.ECB;
+                    break;
+            }
+
+            string decryptedText = Decrypt(encryptedText, key, mode);
+            Console.WriteLine("Decrypted Text: " + decryptedText + "\n");
+
         }
 
         static string Encrypt(string plainText, string key, CipherMode mode)
